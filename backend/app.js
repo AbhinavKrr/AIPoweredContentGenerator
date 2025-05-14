@@ -2,6 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 import authRoutes from "./routes/authRoutes.js";
 import generateRoute from "./routes/generate.js";
@@ -17,6 +23,14 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files from the frontend's dist folder
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// For any route not handled by your APIs, serve index.html (for SPA support)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 const PORT = process.env.PORT || 3000;
 
